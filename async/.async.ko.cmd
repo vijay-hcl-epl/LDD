@@ -1,0 +1,1 @@
+cmd_/media/sda6/Learning_docs/Dev_Drivers_Docs/Driver_Study/async/async.ko := ld -r -m elf_i386 -T ./scripts/module-common.lds --build-id  -o /media/sda6/Learning_docs/Dev_Drivers_Docs/Driver_Study/async/async.ko /media/sda6/Learning_docs/Dev_Drivers_Docs/Driver_Study/async/async.o /media/sda6/Learning_docs/Dev_Drivers_Docs/Driver_Study/async/async.mod.o
