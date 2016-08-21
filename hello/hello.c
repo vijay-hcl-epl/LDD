@@ -53,8 +53,7 @@ ssize_t hello_read(struct file *filp, char *buffer, size_t count, loff_t *f_pos)
         printk("Val of numread is %d\n", phlo->numread);
 
         // The driver can read the value filp->f_pos but should not normally change it
-        printk("Val of fpos is %d\n", (int)filp->f_pos);
-        printk("Val of count is %d\n", (int)count);
+        printk("Val of read fpos is %d\n", (int)filp->f_pos);
         
         // Remember filp are specific to process that opens this
         // so filp->f_pos stores the last accessed index
@@ -75,8 +74,7 @@ ssize_t hello_write(struct file *filp, const char *buffer, size_t count, loff_t 
         printk("Val of numwrite is %d\n", phlo->numwrite);
 
         // The driver can read the value filp->f_pos but should not normally change it
-        printk("Val of fpos is %d\n", (int)filp->f_pos);
-        printk("Val of count is %d\n", (int)count);
+        printk("Val of write fpos is %d\n", (int)filp->f_pos);
 
         // Remember filp are specific to process that opens this
         // so filp->f_pos stores the last accessed index
@@ -114,6 +112,8 @@ static int hello_init(void) {
 
         int ret = -1;
 	
+        // allocate a major number dynamically
+        // Use register_chrdev_region if you know the device numbers you want
 	ret = alloc_chrdev_region(&dev_num, 0, 1, DEVICE_NAME);
 	if(ret < 0) {
 		printk("Hello : Failed to allocate major number\n");
@@ -122,14 +122,13 @@ static int hello_init(void) {
 	maj_num = MAJOR(dev_num);
 
 	printk("Hello : major number is %d\n",maj_num);
-	printk("Use mknod for device file\n");
+        printk("To create mknod for device file, execute 'mknod /dev/hello c %d 0'\n", maj_num);
 
-	//pcdev = cdev_alloc();
+	//pcdev = cdev_alloc(); // Use it if you do not want to have your own device struct
 
         // Initialise the cdev field inside your structure
         cdev_init(&hlo.cdev, &fops);
         hlo.cdev.owner = THIS_MODULE;
-        printk("The addr of cdev is %x\n", (unsigned int)&hlo.cdev);
 
 	/* Now we created a cdev, we have to add it to the kernel
 	int cdev_add(struct cdev *dev, dev_t num, unsigned int count) */
@@ -148,8 +147,9 @@ static void hello_exit(void) {
         // To remove a char device from the system
 	cdev_del(&hlo.cdev);
 	
+        // Do this after doing cdev_del
 	unregister_chrdev_region(dev_num, 1);
-	printk("Helloworld : Exit Module\n");
+	printk("hello : Exit Module\n");
 }
 
 
