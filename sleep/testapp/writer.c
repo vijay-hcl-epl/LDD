@@ -1,7 +1,6 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<fcntl.h>
-#include "../ioctl_basic.h"
+#include<stdio.h>   // for scanf, printf
+#include<fcntl.h>   // for OWRONLY flags
+#include "../ioctl_basic.h" // To use ioctl cmds
 
 int main()
 {
@@ -11,11 +10,13 @@ int main()
         int ch;
         char val[100] = {0};
 
+        // Fill dummy values used for writing
         for(i = 0; i < 100; i++)
         {
             val[i] = i;
         }
 
+        // Open the device file for writing
 	wrfd = open("/dev/sleep", O_WRONLY);
 	if (wrfd == -1) {
 		printf("File open error\n");
@@ -24,9 +25,11 @@ int main()
 
         i = 0;
 
+        // Process until exit is zero
         while(!exit)
         {
-	printf("1 = Write to device\n2 = IOCTL\nEnter your Choice : \n");
+        printf("=================================================================\n\n");
+	printf("1 - Write from device\n2 - IOCTL\n3 - Exit\nEnter your Choice : \n");
 	scanf("%d",&ch);
 	
 	switch(ch) {
@@ -43,9 +46,12 @@ int main()
                 case 2:
                         ioctl(wrfd,IOCTL_HELLO);  //ioctl call
                         break;
-		default:
+                case 3:
                         exit = 1;
-			printf("Command nor recognized\n");
+			printf("Exiting..\n");
+			break;
+		default:
+			printf("Command Not Recognized..\n");
 			break;
 	}
         }
