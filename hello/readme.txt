@@ -25,7 +25,7 @@ Procedure to Test
 =================
 1. Open the terminal 
 2. Run make from LDD/hello. It will create hello.ko
-3. Open a separate tab and type the command 'watch "dmesg | tail -20"'. This shows the last 20 lines of dmesg and refresh it at a period of 2 seconds.
+3. Open a separate tab and type the command 'watch "dmesg | tail -20"'. This shows the last 20 lines of dmesg and refreshes it at a interval of 2 seconds.
 4. insmod hello.ko and check the dmesg tab for new logs
 5. Create a new node file as per the new dmesg log
 6. Then move to LDD/hello/test, compile and execute the test app.
