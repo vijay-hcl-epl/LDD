@@ -1,4 +1,4 @@
-obj-m	+=	async.o
+obj-m	+=	ldd.o
 
 KERNEL_DIR = /usr/src/linux-headers-$(shell uname -r)
 
