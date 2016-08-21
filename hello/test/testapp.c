@@ -61,7 +61,6 @@ int main()
 			printf("Exiting..\n");
 			break;
 		default:
-                        exit = 1;
 			printf("Command Not Recognized..\n");
 			break;
 	}
