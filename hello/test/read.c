@@ -1,5 +1,4 @@
 #include<stdio.h>
-#include<stdlib.h>
 #include<fcntl.h>
 
 int main()
@@ -52,7 +51,7 @@ int main()
 			break;
 		default:
                         exit = 1;
-			printf("Command nor recognized\n");
+			printf("Command not recognized\n");
 			break;
 	}
         }
