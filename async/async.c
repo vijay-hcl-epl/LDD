@@ -1,6 +1,6 @@
 // #includes
 #include<linux/module.h>
-#include <device.h>
+#include<linux/device.h>
 #include<linux/kernel.h>
 #include<linux/fs.h>		//file operations
 #include<linux/cdev.h>		//used to register the driver
