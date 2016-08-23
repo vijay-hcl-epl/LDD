@@ -1,64 +1,53 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<fcntl.h>
-#include <signal.h>
-#include "../ioctl_basic.h"
+#include<stdio.h>    // printf,scanf
+#include<fcntl.h>    // O_WRONLY 
+#include <signal.h>  // SIGIO and signal handlers
 
+// Let this be global, so that signal handler also can access
+int rdfd;
+char read_buff[100];
+
+// Signal handler
 void hndlr(int signo){
-    switch (signo) {
-            case SIGIO:
-
-            printf("SIGIO Received..\n");
-            //fflush(stdout);
-            break;
-    }
+	switch (signo) {
+		case SIGIO:
+			printf("SIGIO Received..\n");
+			read(rdfd, read_buff, 2);
+			printf("Read val[0]: %d\n", read_buff[0]);
+			printf("Read val[1]: %d\n", read_buff[1]);
+			break;
+	}
 }
 
 int main()
 {
-	int rdfd;
-	char read_buff[100];
-        char exit = 0;
-        int ch;
-        char val[100] = {0};
-        struct sigaction sa = {0};
-        int oflags = 0;
+	struct sigaction sa = {0};
+	int oflags = 0;
 
+	// Open the device file
 	rdfd = open("/dev/async", O_RDONLY);
 	if (rdfd == -1) {
 		printf("File open error\n");
 		return -1;
 	}
 
-        sa.sa_handler = hndlr;
- 
-        sigaction(SIGIO, &sa, NULL); /* dummy sample; sigaction( ) is better */
-        fcntl(rdfd, F_SETOWN, getpid());
-        oflags = fcntl(rdfd, F_GETFL);
-        fcntl(rdfd, F_SETFL, oflags | FASYNC);
+	// Register a signal Handler
+	sa.sa_handler = hndlr;
+	sigaction(SIGIO, &sa, NULL); /* dummy sample; sigaction( ) is better */
 
-        while(1);
+	// Set this process as the owner of this file pointer
+	// This step is necessary for the kernel to know just whom to notify.
+	fcntl(rdfd, F_SETOWN, getpid());
 
-        while(!exit)
-        {
-	printf("1 = read from device\n2 = IOCTL\nEnter your Choice : \n");
-	scanf("%d",&ch);
-	
-	switch(ch) {
-		case 1:
-			read(rdfd, read_buff, 2);
-			printf("Read val[0]: %d\n", read_buff[0]);
-			printf("Read val[1]: %d\n", read_buff[1]);
-			break;
-                case 2:
-                        ioctl(rdfd,IOCTL_HELLO);  //ioctl call
-                        break;
-		default:
-                        exit = 1;
-			printf("Command nor recognized\n");
-			break;
-	}
-        }
+	// Get the existing flags
+	oflags = fcntl(rdfd, F_GETFL);
+
+	// Set FASYNC flag
+	fcntl(rdfd, F_SETFL, oflags | FASYNC);
+
+	// Let the reader do some other task
+	// If data is available for write, it will receive a signal from kernel
+	while(1);
+
 	close(rdfd);
 	return 0;
 }
