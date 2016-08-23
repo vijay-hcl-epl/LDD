@@ -13,12 +13,12 @@ Concepts:
 =========
 This project demonstrates the below concepts
 
-1. How to use poll or select on a fd?
+1. How to use poll or select on a fd in user space?
 2. How to implement poll file operations function in a driver.
 
 Test Application
 ================
-The test applications reader.c and writer.c opens the same device file /dev/polsel for reading and writing respectively. In a while loop, it receives user input and based on that it does read or write or ioctl on the device file.
+The test applications reader.c and writer.c opens the same device file /dev/polsel for reading and writing respectively. In a while loop, it receives user input and based on that it does read or write on the device file.
 
 Procedure to Test
 =================
