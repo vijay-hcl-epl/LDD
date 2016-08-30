@@ -101,7 +101,8 @@ static void DoTask(struct work_struct *p)
 	kfree(stuff);
 }
 
-static int DeferTask(struct kiocb *iocb, const struct iovec * iv,unsigned long count, loff_t offset)
+//static int DeferTask(struct kiocb *iocb, const struct iovec * iv,unsigned long count, loff_t offset)
+static int DeferTask(struct kiocb *iocb, char *buffer,size_t count, loff_t offset)
 {
 	struct async_work *stuff;
 	int result;
@@ -124,10 +125,12 @@ static int DeferTask(struct kiocb *iocb, const struct iovec * iv,unsigned long c
 	return -EIOCBQUEUED;
 }
 
-ssize_t Taskasync_aio_read (struct kiocb *iocb, const struct iovec * iv,unsigned long count, loff_t offset)
+//ssize_t Taskasync_aio_read (struct kiocb *iocb, const struct iovec * iv,unsigned long count, loff_t offset)
+ssize_t Taskasync_aio_read (struct kiocb *iocb, char *buffer,size_t count, loff_t offset)
 {
         printk("In Taskasync_aio_read..\n");
-	return DeferTask(iocb, iv , count, offset);
+	//return DeferTask(iocb, iv , count, offset);
+	return DeferTask(iocb, buffer, count, offset);
 }
 
 // File Operations struct
