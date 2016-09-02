@@ -28,6 +28,8 @@ Test Application
 ================
 The test applications test.c opens the device file /dev/Taskasync for reading.It creates an eventfd for getting notification from kernel once asynchronous task is done. It fills iocb using asyio_prep_pread and submits the iocb. Once submits, it polls the eventfd fd whether dasta could be read. If readable, it reads how many asynchronous tasks have taken placei using io_getevents. It then prints out total asynchronous tasks ininitiated and total completed. In this example, it is 1. It just does read which calls the driver aio_read and initiates an asynchronous task which makes it sleep for 10 seconds.
 
+Note: Added helper functions and APIs of kaio in this file itself as there was some difficulty in linking it
+
 Procedure to Test
 =================
 1. Open the terminal
