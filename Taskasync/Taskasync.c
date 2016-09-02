@@ -94,8 +94,15 @@ struct async_work {
 static void DoTask(struct work_struct *p)
 {
 	struct async_work *stuff = container_of(p, struct async_work, work);
-        printk("In DoTask..\n");
-	msleep(10000);
+        int i = 0;
+
+	printk("In DoTask..\n");
+	for(i = 0; i < 10; i++)
+	{
+		msleep(1000);
+		printk("Sleeping %d\n", i + 1);
+	}
+
 	printk("After Sleep in DeferTask..\n");
 	aio_complete(stuff->iocb, stuff->result, 0);
 	kfree(stuff);
@@ -107,12 +114,12 @@ static int DeferTask(struct kiocb *iocb, char *buffer,size_t count, loff_t offse
 	struct async_work *stuff;
 	int result;
 
-        printk("In DeferTask..\n");
+	printk("In DeferTask..\n");
 	/* If this is a synchronous IOCB, we return our status now. */
 	if (is_sync_kiocb(iocb))
 		return result;
 
-        printk("Aftr is_sync_kiocb..\n");
+	printk("Aftr is_sync_kiocb..\n");
 
 	/* Otherwise defer the completion for a few milliseconds. */
 	stuff = kmalloc (sizeof (*stuff), GFP_KERNEL);
@@ -128,7 +135,7 @@ static int DeferTask(struct kiocb *iocb, char *buffer,size_t count, loff_t offse
 //ssize_t Taskasync_aio_read (struct kiocb *iocb, const struct iovec * iv,unsigned long count, loff_t offset)
 ssize_t Taskasync_aio_read (struct kiocb *iocb, char *buffer,size_t count, loff_t offset)
 {
-        printk("In Taskasync_aio_read..\n");
+	printk("In Taskasync_aio_read..\n");
 	//return DeferTask(iocb, iv , count, offset);
 	return DeferTask(iocb, buffer, count, offset);
 }

@@ -286,64 +286,6 @@ long test_read(aio_context_t ctx, int fd, long range, int afd) {
 	return n;
 }
 
-long test_write(aio_context_t ctx, int fd, long range, int afd) {
-	long i, n, r, j;
-	u_int64_t eval;
-	struct iocb **piocb;
-	struct iocb *iocb;
-	struct timespec tmo;
-	static struct io_event events[NUM_EVENTS];
-	static char buf[IORTX_SIZE];
-
-	for (i = 0; i < IORTX_SIZE; i++)
-		buf[i] = i & 0xff;
-	n = range / IORTX_SIZE;
-	iocb = malloc(n * sizeof(struct iocb));
-	piocb = malloc(n * sizeof(struct iocb *));
-	if (!iocb || !piocb) {
-		perror("iocb alloc");
-		return -1;
-	}
-	for (i = 0; i < n; i++) {
-		piocb[i] = &iocb[i];
-		asyio_prep_pwrite(&iocb[i], fd, buf, sizeof(buf),
-				  (n - i - 1) * IORTX_SIZE, afd);
-		iocb[i].aio_data = (u_int64_t) i + 1;
-	}
-	fprintf(stdout, "submitting write request ...\n");
-	if (io_submit(ctx, n, piocb) <= 0) {
-		perror("io_submit");
-		return -1;
-	}
-	for (i = 0; i < n;) {
-		fprintf(stdout, "waiting ... ");
-		waitasync(afd, -1);
-		eval = 0;
-		if (read(afd, &eval, sizeof(eval)) != sizeof(eval))
-			perror("read");
-		fprintf(stdout, "done! %llu\n", (unsigned long long) eval);
-		while (eval > 0) {
-			tmo.tv_sec = 0;
-			tmo.tv_nsec = 0;
-			r = io_getevents(ctx, 1, eval > NUM_EVENTS ? NUM_EVENTS: (long) eval,
-					 events, &tmo);
-			if (r > 0) {
-				for (j = 0; j < r; j++) {
-
-				}
-				i += r;
-				eval -= r;
-				fprintf(stdout, "test_write got %ld/%ld results so far\n",
-					i, n);
-			}
-		}
-	}
-	free(iocb);
-	free(piocb);
-
-	return n;
-}
-
 int main(int ac, char **av) {
 	int afd, fd;
 	aio_context_t ctx = 0;
